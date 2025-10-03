@@ -1,0 +1,407 @@
+:root {
+    --bg-main: #f3f5f9; /* Fondo general claro, ligeramente frío */
+    --bg-header: #6b5b95; /* Violeta oscuro */
+    --bg-sidebar: #4a3f6d; /* Violeta medio oscuro */
+    --bg-card: #ffffff; /* Blanco para tarjetas y modal */
+
+    --text-primary: #1b1c22; /* Texto principal oscuro */
+    --text-secondary: #6e6e85; /* Texto secundario */
+    --text-muted: #a2a3b5; /* Texto más tenue */
+
+    --accent: #7f5af0; /* Violeta vibrante */
+    --accent-light: #b1a7f0; /* Violeta pastel claro */
+    --border-color: #dddff7; /* Borde claro violeta */
+
+    --shadow-light: rgba(127, 90, 240, 0.1); /* sombra violeta suave */
+    --shadow-medium: rgba(127, 90, 240, 0.15);
+    --shadow-strong: rgba(127, 90, 240, 0.25);
+
+    --success-color: #22c55e; /* Verde vibrante para éxito */
+    --error-color: #ef4444; /* Rojo para errores */
+
+    --border-radius: 16px;
+    --transition: 0.3s cubic-bezier(.4, 0, .2, 1);
+}
+
+
+/* -----------------------------------
+   2. RESET & BASE STYLES
+----------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background: linear-gradient(135deg, #e0e7ff, #f9fafb);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: background-color var(--transition), color var(--transition);
+}
+
+/* -----------------------------------
+   3. AUTHENTICATION MODAL
+----------------------------------- */
+.auth-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 41, 55, 0.75); /* dark overlay */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(6px);
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.auth-modal.show {
+    display: flex;
+}
+
+/* Contenedor principal */
+.auth-container {
+    background: var(--bg-card);
+    padding: 30px 40px;
+    border-radius: var(--border-radius);
+    width: 480px;
+    max-width: 95vw;
+    box-shadow:
+        0 8px 24px var(--shadow-strong),
+        0 0 16px var(--shadow-medium);
+    position: relative;
+    animation: slideIn 0.5s ease forwards;
+    border: 1px solid var(--accent-light);
+}
+
+/* Botón cerrar */
+.close-auth {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+    font-weight: 700;
+    line-height: 1;
+}
+.close-auth:hover {
+    color: var(--accent);
+}
+
+/* Título */
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--accent);
+    letter-spacing: 1px;
+}
+
+/* Pestañas */
+.auth-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+    gap: 10px;
+}
+
+.auth-tab {
+    background: #f3f4f6;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-grow: 1;
+    text-align: center;
+    transition: all 0.4s ease;
+    box-shadow: inset 0 0 0 0 var(--accent);
+    user-select: none;
+}
+.auth-tab:hover:not(.active) {
+    background: var(--accent-light);
+    color: var(--accent);
+}
+.auth-tab.active {
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+}
+
+/* Contenido de formularios */
+.auth-content {
+    display: none;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.auth-content.active {
+    display: block;
+}
+
+/* Estilo formularios */
+.auth-form {
+    width: 100%;
+}
+
+/* Fieldset y leyenda */
+fieldset {
+    border: 2px solid var(--accent-light);
+    border-radius: 12px;
+    padding: 20px 25px 30px 25px;
+    margin-bottom: 20px;
+    background: #f9fafb;
+    box-shadow:
+        inset 0 1px 3px var(--shadow-light);
+    transition: border-color var(--transition);
+}
+fieldset:focus-within {
+    border-color: var(--accent);
+    box-shadow:
+        0 0 8px var(--accent-light);
+}
+
+legend {
+    padding: 0 10px;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+/* Grupos de formulario: label + input */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 2px solid #d1d5db;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow:
+        inset 0 1px 3px var(--shadow-light);
+    background: #fff;
+}
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow:
+        0 0 8px var(--accent-light);
+}
+
+/* Botones */
+button.btn {
+    width: 100%;
+    padding: 14px 0;
+    background: linear-gradient(90deg, #4f46e5, #4338ca);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.4s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 12px rgba(79, 70, 229, 0.5);
+    user-select: none;
+}
+button.btn:hover {
+    background: linear-gradient(90deg, #4338ca, #4f46e5);
+    box-shadow: 0 8px 20px rgba(67, 56, 202, 0.7);
+}
+
+/* Mensajes flash */
+.flash-messages {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.flash-message {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 3px 6px var(--shadow-light);
+    user-select: none;
+    border-left: 6px solid transparent;
+}
+
+.flash-message.error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border-left-color: var(--error-color);
+}
+
+.flash-message.success {
+    background-color: #dcfce7;
+    color: #15803d;
+    border-left-color: var(--success-color);
+}
+
+/* Panel usuario (opcional) */
+.user-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 24px var(--shadow-strong);
+    width: 280px;
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    animation: slideDown 0.4s ease forwards;
+}
+
+.user-panel.show {
+    display: flex;
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.user-name {
+    font-weight: 700;
+    color: var(--text-primary);
+    flex-grow: 1;
+    font-size: 1.1rem;
+}
+
+.close-user-panel {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+.close-user-panel:hover {
+    color: var(--accent);
+}
+
+.user-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-menu li {
+    padding: 14px 20px;
+    border-top: 1px solid #e5e7eb;
+    cursor: pointer;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+.user-menu li:hover {
+    background-color: #f3f4f6;
+}
+
+.user-menu li i {
+    min-width: 20px;
+    text-align: center;
+    color: var(--accent);
+}
+.user-menu li a {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* -----------------------------------
+   8. ANIMACIONES
+----------------------------------- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* -----------------------------------
+   9. RESPONSIVE
+----------------------------------- */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 20px 25px;
+        width: 90vw;
+    }
+
+    .auth-tabs {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .auth-tab {
+        padding: 12px 0;
+        border-radius: 12px;
+    }
+
+    .user-panel {
+        width: 90%;
+        right: 5%;
+    }
+}

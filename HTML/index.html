@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticación</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<body>
+    <!-- Modal de autenticación -->
+    <div class="auth-modal show" id="authModal">
+        <div class="auth-container">
+
+            <button class="close-auth" onclick="closeModal()">×</button>
+
+            <div class="auth-tabs">
+                <button class="auth-tab {% if active_tab == 'login' %}active{% endif %}" onclick="showTab('login')">Iniciar sesión</button>
+                <button class="auth-tab {% if active_tab == 'register' %}active{% endif %}" onclick="showTab('register')">Registrarse</button>
+                <button class="auth-tab {% if active_tab == 'changePassword' %}active{% endif %}" onclick="showTab('changePassword')">Cambiar contraseña</button>
+            </div>
+
+            <!-- Mensajes flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flash-messages">
+            {% for category, message in messages %}
+                <li class="flash-message {{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+            <!-- Login -->
+            <div class="auth-content {% if active_tab == 'login' %}active{% endif %}" id="loginContent">
+                <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+                    <fieldset>
+                        <legend>Iniciar sesión</legend>
+
+                        <div class="form-group">
+                            <label for="login-username">Usuario</label>
+                            <input type="text" name="username" id="login-username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-password">Contraseña</label>
+                            <input type="password" name="password" id="login-password" required>
+                        </div>
+
+                        <button type="submit" class="btn">Ingresar</button>
+                    </fieldset>
+                </form>
+            </div>
+
+            <!-- Registro -->
+            <div class="auth-content {% if active_tab == 'register' %}active{% endif %}" id="registerContent">
+                <form method="POST" action="{{ url_for('register') }}" class="auth-form">
+                    <fieldset>
+                        <legend>Registrarse</legend>
+
+                        <div class="form-group">
+                            <label for="register-username">Usuario</label>
+                            <input type="text" name="username" id="register-username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-email">Correo electrónico</label>
+                            <input type="email" name="email" id="register-email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-password">Contraseña</label>
+                            <input type="password" name="password" id="register-password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="register-confirm">Confirmar contraseña</label>
+                            <input type="password" name="confirm_password" id="register-confirm" required>
+                        </div>
+
+                        <button type="submit" class="btn">Registrarse</button>
+                    </fieldset>
+                </form>
+            </div>
+
+            <!-- Cambio de contraseña -->
+            <div class="auth-content {% if active_tab == 'changePassword' %}active{% endif %}" id="changePasswordContent">
+                <form method="POST" action="{{ url_for('change_password') }}" class="auth-form">
+                    <fieldset>
+                        <legend>Cambiar contraseña</legend>
+
+                        <div class="form-group">
+                            <label for="change-username">Usuario</label>
+                            <input type="text" name="username" id="change-username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="current-password">Contraseña actual</label>
+                            <input type="password" name="currentPassword" id="current-password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-password">Nueva contraseña</label>
+                            <input type="password" name="newPassword" id="new-password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm-new-password">Confirmar nueva contraseña</label>
+                            <input type="password" name="confirmNewPassword" id="confirm-new-password" required>
+                        </div>
+
+                        <button type="submit" class="btn">Cambiar contraseña</button>
+                    </fieldset>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Panel de usuario -->
+    {% if username %}
+    <div class="user-panel show">
+        <div class="user-header">
+            <div class="user-avatar">{{ username[0] }}</div>
+            <div class="user-name">{{ username }}</div>
+            <button class="close-user-panel" onclick="document.querySelector('.user-panel').classList.remove('show')">×</button>
+        </div>
+        <ul class="user-menu">
+            <li onclick="switchToChangePassword()">
+                <i class="fas fa-key"></i>Cambiar contraseña
+            </li>
+            <li>
+                <i class="fas fa-sign-out-alt"></i>
+                <a href="{{ url_for('login') }}">Cerrar sesión</a>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Script -->
+    <script>
+        function showTab(tab) {
+            const tabs = ['login', 'register', 'changePassword'];
+            tabs.forEach(t => {
+                const el = document.getElementById(t + 'Content');
+                if (el) el.classList.remove('active');
+            });
+
+            const selected = document.getElementById(tab + 'Content');
+            if (selected) selected.classList.add('active');
+
+            document.querySelectorAll('.auth-tab').forEach(btn => btn.classList.remove('active'));
+            const tabIdMap = {
+                login: 'loginTab',
+                register: 'registerTab',
+                changePassword: 'changePasswordTab'
+            };
+            const activeBtn = document.getElementById(tabIdMap[tab]);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').classList.remove('show');
+        }
+
+        function switchToChangePassword() {
+            showTab('changePassword');
+            const modal = document.getElementById('authModal');
+            if (modal) modal.classList.add('show');
+
+            const panel = document.querySelector('.user-panel');
+            if (panel) panel.classList.remove('show');
+        }
+
+        window.onload = function () {
+            showTab('{{ active_tab }}');
+        };
+    </script>
+</body>
+</html>
